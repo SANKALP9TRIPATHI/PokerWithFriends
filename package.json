@@ -2,6 +2,9 @@
   "name": "vasu-juari-poker",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "concurrently -n next,socket -c cyan,green \"next dev --webpack -p 3000\" \"tsx --tsconfig tsconfig.server.json server.ts\"",
     "dev:next": "next dev --webpack -p 3000",
