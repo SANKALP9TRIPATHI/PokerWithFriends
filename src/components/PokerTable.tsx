@@ -13,6 +13,7 @@ import PotDisplay from './PotDisplay';
 import BettingControls from './BettingControls';
 import ResultsOverlay from './ResultsOverlay';
 import ChatPanel from './ChatPanel';
+import ActionTimer from './ActionTimer';
 import { ChatMessage, PlayerActionType } from '@/lib/types';
 
 interface PokerTableProps {
@@ -139,10 +140,9 @@ export default function PokerTable({
   }, [players, playerId]);
 
   const isShowdown = gameState.phase === 'showdown';
-  const currentTurnPlayerId =
-    gameState.currentPlayerIndex >= 0
-      ? gameState.players[gameState.currentPlayerIndex]?.id
-      : null;
+  const currentTurnPlayer = gameState.currentPlayerIndex >= 0 ? gameState.players[gameState.currentPlayerIndex] : null;
+  const currentTurnPlayerId = currentTurnPlayer?.id || null;
+  const currentTurnPlayerName = currentTurnPlayer?.nickname || '';
 
   return (
     <div
@@ -191,7 +191,9 @@ export default function PokerTable({
           position: 'relative',
           width: '100%',
           maxWidth: 900,
-          aspectRatio: '16/10',
+          flex: 1,
+          minHeight: '45vh',
+          maxHeight: '60vh',
           margin: 'auto',
         }}
       >
@@ -273,10 +275,6 @@ export default function PokerTable({
                 isDealer={player.seatIndex === gameState.dealerIndex}
                 isSmallBlind={player.seatIndex === gameState.smallBlindIndex}
                 isBigBlind={player.seatIndex === gameState.bigBlindIndex}
-                turnTimeLeft={
-                  currentTurnPlayerId === player.id ? turnTimeLeft : null
-                }
-                turnTimerMax={turnTimerMax}
               />
             </div>
           );
@@ -294,9 +292,19 @@ export default function PokerTable({
         )}
       </div>
 
+      {/* Action Timer */}
+      {!isShowdown && gameState.phase !== 'waiting' && currentTurnPlayerId && (
+        <ActionTimer 
+          timeLeft={turnTimeLeft} 
+          maxTime={turnTimerMax} 
+          isMyTurn={currentTurnPlayerId === playerId} 
+          currentPlayerName={currentTurnPlayerName} 
+        />
+      )}
+
       {/* Betting controls */}
       {!isShowdown && gameState.phase !== 'waiting' && (
-        <div style={{ width: '100%', maxWidth: 520, marginTop: 8 }}>
+        <div style={{ width: '100%', maxWidth: 520 }}>
           <BettingControls
             gameState={gameState}
             playerId={playerId}

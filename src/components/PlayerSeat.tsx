@@ -7,7 +7,6 @@
 import { motion } from 'framer-motion';
 import { ClientPlayer, PlayerAction } from '@/lib/types';
 import Card from './Card';
-import ActionTimer from './ActionTimer';
 
 interface PlayerSeatProps {
   player: ClientPlayer;
@@ -16,8 +15,6 @@ interface PlayerSeatProps {
   isDealer: boolean;
   isSmallBlind: boolean;
   isBigBlind: boolean;
-  turnTimeLeft: number | null;
-  turnTimerMax: number;
 }
 
 function getStatusColor(status: string): string {
@@ -71,8 +68,6 @@ export default function PlayerSeat({
   isDealer,
   isSmallBlind,
   isBigBlind,
-  turnTimeLeft,
-  turnTimerMax,
 }: PlayerSeatProps) {
   const statusLabel = getStatusLabel(player);
   const isFolded = player.status === 'folded';
@@ -166,17 +161,6 @@ export default function PlayerSeat({
         >
           {getInitials(player.nickname)}
         </div>
-
-        {/* Timer */}
-        {isCurrentTurn && turnTimeLeft !== null && (
-          <div style={{ position: 'absolute', top: -6, right: -20, zIndex: 10 }}>
-            <ActionTimer
-              timeLeft={turnTimeLeft}
-              maxTime={turnTimerMax}
-              isMyTurn={isMe}
-            />
-          </div>
-        )}
 
         {/* Position badges */}
         {isDealer && (

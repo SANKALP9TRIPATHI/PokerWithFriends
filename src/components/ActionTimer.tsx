@@ -4,72 +4,76 @@
 // Action Timer Component
 // ============================================================
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface ActionTimerProps {
   timeLeft: number | null;
   maxTime: number;
   isMyTurn: boolean;
+  currentPlayerName?: string;
 }
 
-export default function ActionTimer({ timeLeft, maxTime, isMyTurn }: ActionTimerProps) {
+export default function ActionTimer({ timeLeft, maxTime, isMyTurn, currentPlayerName }: ActionTimerProps) {
   if (timeLeft === null || timeLeft < 0) return null;
 
   const progress = timeLeft / maxTime;
-  const circumference = 2 * Math.PI * 18;
-  const strokeDashoffset = circumference * (1 - progress);
 
   const getColor = () => {
-    if (progress > 0.5) return '#22c55e';
-    if (progress > 0.25) return '#eab308';
-    return '#ef4444';
+    if (progress > 0.5) return '#22c55e'; // success
+    if (progress > 0.25) return '#f0b429'; // accent-gold
+    return '#ef4444'; // error
   };
 
   return (
     <div
       style={{
-        position: 'relative',
-        width: 44,
-        height: 44,
+        width: '100%',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
+        gap: 8,
+        padding: '0 20px',
+        marginBottom: 16,
       }}
     >
-      <svg width="44" height="44" style={{ transform: 'rotate(-90deg)' }}>
-        <circle
-          cx="22"
-          cy="22"
-          r="18"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="3"
-          fill="none"
-        />
-        <motion.circle
-          cx="22"
-          cy="22"
-          r="18"
-          stroke={getColor()}
-          strokeWidth="3"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          animate={{ strokeDashoffset }}
-          transition={{ duration: 0.5, ease: 'linear' }}
-        />
-      </svg>
-      <span
+      <div
         style={{
-          position: 'absolute',
-          fontSize: 13,
+          fontSize: 16,
           fontWeight: 700,
-          color: getColor(),
           fontFamily: 'var(--font-display)',
+          letterSpacing: '0.05em',
         }}
       >
-        {timeLeft}
-      </span>
+        {isMyTurn ? (
+          <span style={{ color: 'var(--accent-gold)' }}>YOUR TURN ({timeLeft}s)</span>
+        ) : (
+          <span style={{ color: 'var(--text-secondary)' }}>
+            Waiting for {currentPlayerName}... ({timeLeft}s)
+          </span>
+        )}
+      </div>
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 400,
+          height: 10,
+          background: 'rgba(0,0,0,0.5)',
+          borderRadius: 5,
+          overflow: 'hidden',
+          boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.5)',
+        }}
+      >
+        <motion.div
+          animate={{ width: `${Math.max(0, progress * 100)}%` }}
+          transition={{ duration: 1, ease: 'linear' }}
+          style={{
+            height: '100%',
+            background: getColor(),
+            borderRadius: 5,
+            boxShadow: `0 0 10px ${getColor()}`,
+          }}
+        />
+      </div>
     </div>
   );
 }
